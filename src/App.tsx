@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Sidebar, { ModuleType } from './components/Sidebar';
 import Header from './components/Header';
@@ -56,6 +56,13 @@ import {
   SystemNotification 
 } from './types';
 
+import {
+  subscribeToCollection,
+  saveDocument,
+  updateDocumentFields,
+  testConnection
+} from './lib/firestoreService';
+
 function AppContent() {
   const { profile, loading, login, error } = useAuth() as any;
   const [activeModule, setActiveModule] = useState<ModuleType>('Dashboard');
@@ -77,6 +84,41 @@ function AppContent() {
   const [leads, setLeads] = useState<Lead[]>(INITIAL_LEADS);
   const [purchases, setPurchases] = useState<PurchaseRequest[]>(INITIAL_PURCHASES);
   const [notifications, setNotifications] = useState<SystemNotification[]>(INITIAL_NOTIFICATIONS);
+
+  // Hook up real-time bidirectional Firestore persistence
+  useEffect(() => {
+    testConnection();
+
+    const unsubProjects = subscribeToCollection('projects', INITIAL_PROJECTS, setProjects);
+    const unsubTasks = subscribeToCollection('tasks', INITIAL_TASKS, setTasks);
+    const unsubServices = subscribeToCollection('services', INITIAL_SERVICES, setServices);
+    const unsubOrders = subscribeToCollection('orders', INITIAL_ORDERS, setOrders);
+    const unsubCourses = subscribeToCollection('courses', INITIAL_COURSES, setCourses);
+    const unsubAppointments = subscribeToCollection('appointments', INITIAL_APPOINTMENTS, setAppointments);
+    const unsubBookings = subscribeToCollection('bookings', INITIAL_BOOKINGS, setBookings);
+    const unsubVendors = subscribeToCollection('vendors', INITIAL_VENDORS, setVendors);
+    const unsubTalents = subscribeToCollection('talents', INITIAL_TALENTS, setTalents);
+    const unsubInvoices = subscribeToCollection('invoices', INITIAL_INVOICES, setInvoices);
+    const unsubLeads = subscribeToCollection('leads', INITIAL_LEADS, setLeads);
+    const unsubPurchases = subscribeToCollection('purchases', INITIAL_PURCHASES, setPurchases);
+    const unsubNotifications = subscribeToCollection('notifications', INITIAL_NOTIFICATIONS, setNotifications);
+
+    return () => {
+      unsubProjects();
+      unsubTasks();
+      unsubServices();
+      unsubOrders();
+      unsubCourses();
+      unsubAppointments();
+      unsubBookings();
+      unsubVendors();
+      unsubTalents();
+      unsubInvoices();
+      unsubLeads();
+      unsubPurchases();
+      unsubNotifications();
+    };
+  }, []);
 
   // Login form states
   const [loginEmail, setLoginEmail] = useState('');
@@ -103,12 +145,12 @@ function AppContent() {
     }
   };
 
-  // State Mutators
-  const handleAddOrder = (newOrder: Partial<Order>) => {
+  // State Mutators with Cloud Firestore Persistence
+  const handleAddOrder = async (newOrder: Partial<Order>) => {
     const complete: Order = {
       id: `ord-${Date.now().toString().slice(-4)}`,
-      customerId: 'demo-talent-uid',
-      customerName: newOrder.customerName || 'Enterprise Client',
+      customerId: profile?.uid || 'demo-talent-uid',
+      customerName: newOrder.customerName || profile?.displayName || 'Enterprise Client',
       serviceId: newOrder.serviceId || 'srv-1',
       serviceTitle: newOrder.serviceTitle || 'Core Service',
       vendorId: newOrder.vendorId || 'v-1',
@@ -117,10 +159,12 @@ function AppContent() {
       createdAt: new Date().toISOString().split('T')[0]
     };
     setOrders((prev) => [complete, ...prev]);
+    await saveDocument('orders', complete);
   };
 
-  const handleUpdateOrderStatus = (orderId: string, status: Order['status']) => {
+  const handleUpdateOrderStatus = async (orderId: string, status: Order['status']) => {
     setOrders((prev) => prev.map((o) => o.id === orderId ? { ...o, status } : o));
+    await updateDocumentFields('orders', orderId, { status });
     
     // Auto sync to project list when contract signed
     if (status === 'In Progress') {
@@ -137,16 +181,17 @@ function AppContent() {
           budget: orderObj.price,
           spent: 0,
           progress: 10,
-          managerId: 'demo-pmo-uid',
+          managerId: profile?.uid || 'demo-pmo-uid',
           riskLevel: 'Low',
           issuesCount: 0
         };
         setProjects((prev) => [newProj, ...prev]);
+        await saveDocument('projects', newProj);
       }
     }
   };
 
-  const handleAddVendor = (newVendor: Partial<VendorProfile>) => {
+  const handleAddVendor = async (newVendor: Partial<VendorProfile>) => {
     const complete: VendorProfile = {
       id: `v-${Date.now().toString().slice(-3)}`,
       userId: `user-vendor-${Date.now()}`,
@@ -160,21 +205,24 @@ function AppContent() {
       contractStatus: 'Under Review'
     };
     setVendors((prev) => [complete, ...prev]);
+    await saveDocument('vendors', complete);
   };
 
-  const handleUpdateVendorStatus = (vendorId: string, fields: Partial<VendorProfile>) => {
+  const handleUpdateVendorStatus = async (vendorId: string, fields: Partial<VendorProfile>) => {
     setVendors((prev) => prev.map((v) => v.id === vendorId ? { ...v, ...fields } : v));
+    await updateDocumentFields('vendors', vendorId, fields);
   };
 
-  const handleCompleteCourse = (courseId: string) => {
+  const handleCompleteCourse = async (courseId: string) => {
     setCourses((prev) => prev.map((c) => c.id === courseId ? { ...c, progress: 100 } : c));
+    await updateDocumentFields('courses', courseId, { progress: 100 });
   };
 
-  const handleAddAppointment = (newApp: Partial<Appointment>) => {
+  const handleAddAppointment = async (newApp: Partial<Appointment>) => {
     const complete: Appointment = {
       id: `app-${Date.now().toString().slice(-3)}`,
-      patientId: 'demo-talent-uid',
-      patientName: newApp.patientName || 'Rizky Pratama',
+      patientId: profile?.uid || 'demo-talent-uid',
+      patientName: newApp.patientName || profile?.displayName || 'Rizky Pratama',
       doctorName: newApp.doctorName || 'Dr. Hendra Gunawan, Sp.PD',
       date: newApp.date || '2026-06-27',
       time: newApp.time || '10:00',
@@ -183,13 +231,14 @@ function AppContent() {
       notes: newApp.notes
     };
     setAppointments((prev) => [complete, ...prev]);
+    await saveDocument('appointments', complete);
   };
 
-  const handleAddBooking = (newBook: Partial<Booking>) => {
+  const handleAddBooking = async (newBook: Partial<Booking>) => {
     const complete: Booking = {
       id: `bk-${Date.now().toString().slice(-3)}`,
-      customerId: 'demo-talent-uid',
-      customerName: newBook.customerName || 'Ahmad Sepuh',
+      customerId: profile?.uid || 'demo-talent-uid',
+      customerName: newBook.customerName || profile?.displayName || 'Ahmad Sepuh',
       venueName: newBook.venueName || 'Conference Room',
       date: newBook.date || '2026-06-29',
       timeSlot: newBook.timeSlot || '09:00 - 13:00',
@@ -198,30 +247,33 @@ function AppContent() {
       status: 'Confirmed'
     };
     setBookings((prev) => [complete, ...prev]);
+    await saveDocument('bookings', complete);
   };
 
-  const handleAddTask = (newTask: Partial<Task>) => {
+  const handleAddTask = async (newTask: Partial<Task>) => {
     const complete: Task = {
       id: `t-${Date.now().toString().slice(-3)}`,
       projectId: newTask.projectId || 'p-101',
       title: newTask.title || 'Untitled task card',
       description: newTask.description || '',
-      assignedTo: 'demo-talent-uid',
+      assignedTo: newTask.assignedTo || profile?.uid || 'demo-talent-uid',
       status: 'Todo',
       priority: newTask.priority || 'Medium',
       dueDate: newTask.dueDate || '2026-07-15'
     };
     setTasks((prev) => [...prev, complete]);
+    await saveDocument('tasks', complete);
   };
 
-  const handleUpdateTaskStatus = (taskId: string, status: Task['status']) => {
+  const handleUpdateTaskStatus = async (taskId: string, status: Task['status']) => {
     setTasks((prev) => prev.map((t) => t.id === taskId ? { ...t, status } : t));
+    await updateDocumentFields('tasks', taskId, { status });
   };
 
-  const handleAddPurchase = (newPr: Partial<PurchaseRequest>) => {
+  const handleAddPurchase = async (newPr: Partial<PurchaseRequest>) => {
     const complete: PurchaseRequest = {
       id: `PR-${Date.now().toString().slice(-3)}`,
-      requesterName: 'Ahmad Sepuh',
+      requesterName: profile?.displayName || 'Ahmad Sepuh',
       department: newPr.department || 'PMO - IT Pillar',
       items: newPr.items || [],
       totalAmount: newPr.totalAmount || 0,
@@ -229,13 +281,15 @@ function AppContent() {
       createdAt: new Date().toISOString().split('T')[0]
     };
     setPurchases((prev) => [complete, ...prev]);
+    await saveDocument('purchases', complete);
   };
 
-  const handleUpdatePurchaseStatus = (prId: string, status: PurchaseRequest['status']) => {
+  const handleUpdatePurchaseStatus = async (prId: string, status: PurchaseRequest['status']) => {
     setPurchases((prev) => prev.map((p) => p.id === prId ? { ...p, status } : p));
+    await updateDocumentFields('purchases', prId, { status });
   };
 
-  const handleAddLead = (newLead: Partial<Lead>) => {
+  const handleAddLead = async (newLead: Partial<Lead>) => {
     const complete: Lead = {
       id: `lead-${Date.now().toString().slice(-3)}`,
       name: newLead.name || 'John Prospect',
@@ -247,13 +301,15 @@ function AppContent() {
       lastContact: new Date().toISOString().split('T')[0]
     };
     setLeads((prev) => [complete, ...prev]);
+    await saveDocument('leads', complete);
   };
 
-  const handleUpdateLeadStage = (leadId: string, stage: Lead['stage']) => {
+  const handleUpdateLeadStage = async (leadId: string, stage: Lead['stage']) => {
     setLeads((prev) => prev.map((l) => l.id === leadId ? { ...l, stage } : l));
+    await updateDocumentFields('leads', leadId, { stage });
   };
 
-  const handleAddInvoice = (newInv: Partial<Invoice>) => {
+  const handleAddInvoice = async (newInv: Partial<Invoice>) => {
     const complete: Invoice = {
       id: `inv-${Date.now().toString().slice(-3)}`,
       recipientName: newInv.recipientName || 'Enterprise Partner',
@@ -264,14 +320,17 @@ function AppContent() {
       issuedDate: newInv.issuedDate || '2026-06-26'
     };
     setInvoices((prev) => [complete, ...prev]);
+    await saveDocument('invoices', complete);
   };
 
-  const handlePayInvoice = (invoiceId: string) => {
+  const handlePayInvoice = async (invoiceId: string) => {
     setInvoices((prev) => prev.map((i) => i.id === invoiceId ? { ...i, status: 'Paid' } : i));
+    await updateDocumentFields('invoices', invoiceId, { status: 'Paid' });
   };
 
-  const handleNotificationRead = (notifId: string) => {
+  const handleNotificationRead = async (notifId: string) => {
     setNotifications((prev) => prev.map((n) => n.id === notifId ? { ...n, read: true } : n));
+    await updateDocumentFields('notifications', notifId, { read: true });
   };
 
   const handleSearch = (query: string) => {

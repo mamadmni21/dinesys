@@ -8,18 +8,22 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCuLDtjHxzSOp_ZF4a92K6UlyJAdJAo6-U",
-  authDomain: "fleet-ai-mp.firebaseapp.com",
-  projectId: "fleet-ai-mp",
-  storageBucket: "fleet-ai-mp.firebasestorage.app",
-  messagingSenderId: "167536850972",
-  appId: "1:167536850972:web:7b1a1bff0e077399dd47d9"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "fleet-ai-mp.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "fleet-ai-mp",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "fleet-ai-mp.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "167536850972",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:167536850972:web:7b1a1bff0e077399dd47d9"
 };
 
 // Initialize Firebase
 let app;
 try {
-  app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  if (firebaseConfig.apiKey) {
+    app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+  } else {
+    console.warn("VITE_FIREBASE_API_KEY is not set; skipping live Firebase initialization.");
+  }
 } catch (error) {
   console.error("Firebase app initialization failed", error);
 }
@@ -30,7 +34,8 @@ export const auth = app ? getAuth(app) : null;
 let dbInstance: Firestore | null = null;
 if (app) {
   try {
-    dbInstance = getFirestore(app, "ai-studio-39470171-6618-47c1-abc1-fbfa8ed92265");
+    const dbId = import.meta.env.VITE_FIREBASE_DATABASE_ID || "ai-studio-39470171-6618-47c1-abc1-fbfa8ed92265";
+    dbInstance = getFirestore(app, dbId);
   } catch (error) {
     console.error("Firestore database initialization failed, falling back to default.", error);
     try {

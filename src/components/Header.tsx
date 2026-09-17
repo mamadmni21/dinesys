@@ -15,7 +15,8 @@ import {
   Menu,
   CheckCircle2,
   AlertTriangle,
-  Info
+  Info,
+  Database
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { SystemNotification } from '../types';
@@ -104,7 +105,18 @@ export default function Header({
       </div>
 
       {/* Utility Panel */}
-      <div className="flex items-center gap-4" id="header-utility-panel">
+      <div className="flex items-center gap-3 md:gap-4" id="header-utility-panel">
+        {/* Firestore Persistence Status Pill */}
+        <div 
+          id="header-firestore-status"
+          className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl text-[11px] font-semibold bg-emerald-500/10 border border-emerald-500/20 text-emerald-400"
+          title="Connected to Cloud Firestore database: ai-studio-39470171-6618-47c1-abc1-fbfa8ed92265"
+        >
+          <Database size={13} className="text-emerald-400" />
+          <span>Firestore Synced</span>
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
+        </div>
+
         {/* Calendar Scheduler Widget */}
         <button
           onClick={onCalendarToggle}

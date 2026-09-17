@@ -1,0 +1,298 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Enterprise ecosystem user profile",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "role": { 
+          "type": "string",
+          "enum": ["Super Admin", "PMO Manager", "Business Unit Manager", "Vendor", "Talent", "Customer", "Finance", "HR"]
+        },
+        "phoneNumber": { "type": "string" },
+        "businessUnit": { "type": "string" },
+        "status": { "type": "string", "enum": ["Active", "Inactive", "Pending"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "email", "role"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "PMO enterprise delivery project",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "pillar": { "type": "string" },
+        "status": { "type": "string", "enum": ["Planning", "In Progress", "Review", "Completed", "On Hold"] },
+        "startDate": { "type": "string" },
+        "endDate": { "type": "string" },
+        "budget": { "type": "number" },
+        "spent": { "type": "number" },
+        "progress": { "type": "number" },
+        "managerId": { "type": "string" },
+        "riskLevel": { "type": "string", "enum": ["Low", "Medium", "High"] },
+        "issuesCount": { "type": "number" }
+      },
+      "required": ["id", "name", "pillar", "status", "budget", "progress"]
+    },
+    "Task": {
+      "title": "Task",
+      "description": "Project kanban deliverable or sprint task",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "projectId": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "assignedTo": { "type": "string" },
+        "status": { "type": "string", "enum": ["Todo", "In Progress", "Review", "Done"] },
+        "priority": { "type": "string", "enum": ["Low", "Medium", "High", "Critical"] },
+        "dueDate": { "type": "string" }
+      },
+      "required": ["id", "projectId", "title", "status", "priority"]
+    },
+    "Vendor": {
+      "title": "Vendor",
+      "description": "Vendor enterprise scorecards and verification profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "companyName": { "type": "string" },
+        "category": { "type": "string" },
+        "rating": { "type": "number" },
+        "performanceScore": { "type": "number" },
+        "verificationStatus": { "type": "string", "enum": ["Verified", "Pending", "Rejected"] },
+        "isBlacklisted": { "type": "boolean" },
+        "contractStatus": { "type": "string", "enum": ["Active", "Under Review", "Expired"] }
+      },
+      "required": ["id", "companyName", "category", "verificationStatus"]
+    },
+    "Talent": {
+      "title": "Talent",
+      "description": "Talent network freelancer and consultant profile",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "name": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "hourlyRate": { "type": "number" },
+        "rating": { "type": "number" },
+        "completedProjects": { "type": "number" },
+        "availability": { "type": "string", "enum": ["Available", "Busy", "Offline"] }
+      },
+      "required": ["id", "name", "category", "availability"]
+    },
+    "ServiceProduct": {
+      "title": "ServiceProduct",
+      "description": "Catalog item in the enterprise marketplace",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "vendorId": { "type": "string" },
+        "vendorName": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "pillar": { "type": "string" },
+        "price": { "type": "number" },
+        "pricingModel": { "type": "string" },
+        "rating": { "type": "number" },
+        "reviewCount": { "type": "number" },
+        "sla": { "type": "string" },
+        "isVerified": { "type": "boolean" }
+      },
+      "required": ["id", "vendorId", "title", "pillar", "price"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Marketplace procurement order and contract commitment",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "serviceId": { "type": "string" },
+        "serviceTitle": { "type": "string" },
+        "vendorId": { "type": "string" },
+        "price": { "type": "number" },
+        "status": { "type": "string", "enum": ["Pending", "In Progress", "Completed", "Cancelled"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "serviceId", "price", "status"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Finance pillar invoice and payment status",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "recipientName": { "type": "string" },
+        "recipientEmail": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Paid", "Unpaid", "Overdue"] },
+        "dueDate": { "type": "string" },
+        "issuedDate": { "type": "string" }
+      },
+      "required": ["id", "recipientName", "amount", "status"]
+    },
+    "Course": {
+      "title": "Course",
+      "description": "Training and LMS academy curriculum item",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "instructor": { "type": "string" },
+        "duration": { "type": "string" },
+        "level": { "type": "string" },
+        "rating": { "type": "number" },
+        "enrolledCount": { "type": "number" },
+        "progress": { "type": "number" }
+      },
+      "required": ["id", "title", "instructor"]
+    },
+    "Appointment": {
+      "title": "Appointment",
+      "description": "Clinic and telemedicine healthcare schedule",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "patientId": { "type": "string" },
+        "patientName": { "type": "string" },
+        "doctorName": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "type": { "type": "string" },
+        "status": { "type": "string" },
+        "notes": { "type": "string" }
+      },
+      "required": ["id", "patientName", "doctorName", "date", "status"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "Hospitality and MICE event hall reservation",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "customerId": { "type": "string" },
+        "customerName": { "type": "string" },
+        "venueName": { "type": "string" },
+        "date": { "type": "string" },
+        "timeSlot": { "type": "string" },
+        "pillar": { "type": "string" },
+        "price": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "customerName", "venueName", "date", "status"]
+    },
+    "PurchaseRequest": {
+      "title": "PurchaseRequest",
+      "description": "Procurement workflow purchase authorization request",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "requesterName": { "type": "string" },
+        "department": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string", "enum": ["Pending", "Approved", "Rejected"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["id", "requesterName", "totalAmount", "status"]
+    },
+    "Lead": {
+      "title": "Lead",
+      "description": "CRM corporate sales pipeline deal lead",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "company": { "type": "string" },
+        "email": { "type": "string" },
+        "value": { "type": "number" },
+        "stage": { "type": "string", "enum": ["Lead", "Qualified", "Proposal", "Negotiation", "Closed Won", "Closed Lost"] },
+        "source": { "type": "string" },
+        "lastContact": { "type": "string" }
+      },
+      "required": ["id", "name", "company", "value", "stage"]
+    },
+    "SystemNotification": {
+      "title": "SystemNotification",
+      "description": "Real-time ecosystem alert and notification",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "warning", "success", "danger"] },
+        "timestamp": { "type": "string" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["id", "title", "message", "timestamp", "read"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profiles and credentials"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Active PMO projects"
+    },
+    "/tasks/{taskId}": {
+      "schema": "Task",
+      "description": "Kanban sprint deliverables"
+    },
+    "/vendors/{vendorId}": {
+      "schema": "Vendor",
+      "description": "Vendor profiles and evaluations"
+    },
+    "/talents/{talentId}": {
+      "schema": "Talent",
+      "description": "Consultant and talent directory"
+    },
+    "/services/{serviceId}": {
+      "schema": "ServiceProduct",
+      "description": "Marketplace services and products"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Service orders and contracts"
+    },
+    "/invoices/{invId}": {
+      "schema": "Invoice",
+      "description": "Invoices and billing items"
+    },
+    "/courses/{courseId}": {
+      "schema": "Course",
+      "description": "Academy LMS courses"
+    },
+    "/appointments/{appId}": {
+      "schema": "Appointment",
+      "description": "Clinic appointments"
+    },
+    "/bookings/{bookingId}": {
+      "schema": "Booking",
+      "description": "Hospitality venue reservations"
+    },
+    "/purchases/{prId}": {
+      "schema": "PurchaseRequest",
+      "description": "Procurement purchase requests"
+    },
+    "/leads/{leadId}": {
+      "schema": "Lead",
+      "description": "CRM pipeline sales leads"
+    },
+    "/notifications/{notifId}": {
+      "schema": "SystemNotification",
+      "description": "System broadcast notifications"
+    }
+  }
+}
