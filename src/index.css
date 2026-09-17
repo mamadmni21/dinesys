@@ -1,0 +1,196 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Frosted Glass Theme Utility & Global Overrides */
+
+/* 1. Global mesh background */
+.mesh-bg {
+  background-color: #070e1b !important;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.45) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(212, 175, 55, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.4) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(212, 175, 55, 0.08) 0px, transparent 50%) !important;
+  background-attachment: fixed !important;
+}
+
+/* 2. Glass panel utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.glass-nav-active {
+  background: rgba(212, 175, 55, 0.15) !important;
+  border-left: 3px solid #D4AF37 !important;
+  color: #D4AF37 !important;
+}
+
+.gold-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #B59410 100%) !important;
+}
+
+.gold-text {
+  color: #D4AF37 !important;
+}
+
+.gold-border {
+  border-color: rgba(212, 175, 55, 0.3) !important;
+}
+
+/* 3. Global semantic overrides for dark frosted glass layout */
+#main-application-viewport {
+  background: #070e1b !important;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(30, 58, 138, 0.45) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(212, 175, 55, 0.12) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.4) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(212, 175, 55, 0.08) 0px, transparent 50%) !important;
+  background-attachment: fixed !important;
+  color: #f1f5f9 !important;
+}
+
+/* Transform white/light panels to Frosted Glass */
+#main-application-viewport .bg-white {
+  background: rgba(255, 255, 255, 0.03) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  color: #f1f5f9 !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Text overrides to keep excellent readability */
+#main-application-viewport .text-slate-800,
+#main-application-viewport .text-slate-900,
+#main-application-viewport .text-slate-700,
+#main-application-viewport .text-gray-900,
+#main-application-viewport .text-gray-800,
+#main-application-viewport h2,
+#main-application-viewport h3,
+#main-application-viewport h4 {
+  color: #f8fafc !important;
+}
+
+#main-application-viewport .text-slate-500,
+#main-application-viewport .text-slate-600,
+#main-application-viewport .text-gray-500,
+#main-application-viewport .text-gray-600 {
+  color: #cbd5e1 !important;
+}
+
+#main-application-viewport .text-slate-400,
+#main-application-viewport .text-gray-400 {
+  color: #94a3b8 !important;
+}
+
+/* Borders */
+#main-application-viewport .border-slate-100,
+#main-application-viewport .border-slate-200,
+#main-application-viewport .border-slate-200\/50,
+#main-application-viewport .border-gray-100,
+#main-application-viewport .border-gray-200,
+#main-application-viewport .border-slate-300 {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Dividers */
+#main-application-viewport .divide-slate-100 > * + *,
+#main-application-viewport .divide-slate-200 > * + *,
+#main-application-viewport .divide-gray-100 > * + * {
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Form input elements */
+#main-application-viewport input[type="text"],
+#main-application-viewport input[type="email"],
+#main-application-viewport input[type="password"],
+#main-application-viewport input[type="number"],
+#main-application-viewport input[type="date"],
+#main-application-viewport select,
+#main-application-viewport textarea {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+}
+
+#main-application-viewport input[type="text"]::placeholder,
+#main-application-viewport input[type="email"]::placeholder,
+#main-application-viewport input[type="password"]::placeholder,
+#main-application-viewport input[type="number"]::placeholder,
+#main-application-viewport input[type="date"]::placeholder,
+#main-application-viewport textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+#main-application-viewport select option {
+  background-color: #0d1527 !important;
+  color: #ffffff !important;
+}
+
+/* Interactive hover rows/items */
+#main-application-viewport .hover\:bg-slate-50:hover,
+#main-application-viewport .hover\:bg-slate-50\/50:hover,
+#main-application-viewport .hover\:bg-slate-100:hover,
+#main-application-viewport .hover\:bg-gray-50:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+/* Table header text & background styling */
+#main-application-viewport th {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  color: #cbd5e1 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Light background container grids */
+#main-application-viewport .bg-slate-50,
+#main-application-viewport .bg-slate-100,
+#main-application-viewport .bg-gray-50,
+#main-application-viewport .bg-gray-100 {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+  color: #ffffff !important;
+}
+
+/* Special pill/badges adjustments */
+#main-application-viewport .bg-blue-50,
+#main-application-viewport .bg-indigo-50,
+#main-application-viewport .bg-amber-50,
+#main-application-viewport .bg-emerald-50,
+#main-application-viewport .bg-rose-50 {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Hover scales and interactive pillar cards as requested by theme spec */
+.pillar-card {
+  transition: all 0.3s ease;
+}
+.pillar-card:hover {
+  border-color: #D4AF37 !important;
+  background: rgba(212, 175, 55, 0.05) !important;
+  transform: translateY(-2px);
+}
+
+/* Scrollbar customization for beautiful dark glass style */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.02);
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

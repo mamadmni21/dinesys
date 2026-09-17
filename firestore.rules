@@ -1,0 +1,131 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper to get user profile and check role
+    function getRole() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role;
+    }
+    
+    // Check if user is logged in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    match /users/{userId} {
+      allow read, write: if isSignedIn();
+    }
+    
+    match /roles/{roleId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && getRole() == 'Super Admin';
+    }
+
+    match /vendors/{vendorId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'PMO Manager' || request.auth.uid == resource.data.userId || request.auth.uid == request.resource.data.userId);
+    }
+
+    match /talents/{talentId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'HR' || request.auth.uid == resource.data.userId || request.auth.uid == request.resource.data.userId);
+    }
+
+    match /projects/{projectId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'PMO Manager' || getRole() == 'Business Unit Manager');
+    }
+
+    match /tasks/{taskId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /orders/{orderId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /products/{productId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'Vendor' || getRole() == 'PMO Manager');
+    }
+
+    match /services/{serviceId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'Vendor' || getRole() == 'PMO Manager');
+    }
+
+    match /marketplace/{item} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn();
+    }
+
+    match /categories/{category} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && getRole() == 'Super Admin';
+    }
+
+    match /training/{trainingId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'HR' || getRole() == 'PMO Manager');
+    }
+
+    match /courses/{courseId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'HR' || getRole() == 'PMO Manager');
+    }
+
+    match /certificates/{certId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'HR');
+    }
+
+    match /clinic/{clinicId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /appointments/{appId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /hospitality/{hospId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /bookings/{bookingId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /payments/{payId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'Finance' || getRole() == 'Customer' || getRole() == 'Vendor');
+    }
+
+    match /invoices/{invId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'Finance');
+    }
+
+    match /crm/{crmId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /notifications/{notifId} {
+      allow read, write: if isSignedIn();
+    }
+
+    match /reports/{repId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'PMO Manager' || getRole() == 'Finance');
+    }
+
+    match /audit_logs/{logId} {
+      allow read: if isSignedIn() && (getRole() == 'Super Admin' || getRole() == 'PMO Manager');
+      allow write: if isSignedIn();
+    }
+
+    match /settings/{setId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && getRole() == 'Super Admin';
+    }
+  }
+}

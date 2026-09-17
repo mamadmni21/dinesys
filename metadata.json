@@ -1,0 +1,6 @@
+{
+  "name": "DINESYS",
+  "description": "Digital Integrated Ecosystem Platform for PMO managing digital business operations across Marketplace, CRM, Projects, Finance, and more.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
